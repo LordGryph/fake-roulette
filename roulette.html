@@ -1,0 +1,447 @@
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fake Roulette</title>
+
+    <!-- Pour iPhone en mode "app" -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fake Roulette">
+
+    <!-- ton CSS ici -->
+    <style>
+* {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top, #222 0%, #000 60%);
+            color: #f5f5f5;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px 16px 28px;
+        }
+
+        .card {
+            background: rgba(20, 20, 20, 0.92);
+            border-radius: 18px;
+            padding: 18px 16px 22px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 16px;
+        }
+
+        .credits {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .credits span {
+            font-weight: 600;
+        }
+
+        .roulette-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .roulette {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 6px solid #333;
+            position: relative;
+            background: conic-gradient(
+                #b30000 0deg 45deg,
+                #111 45deg 90deg,
+                #b30000 90deg 135deg,
+                #111 135deg 180deg,
+                #b30000 180deg 225deg,
+                #111 225deg 270deg,
+                #b30000 270deg 315deg,
+                #111 315deg 360deg
+            );
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+        }
+
+        .roulette::before {
+            content: "";
+            position: absolute;
+            inset: 30%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #222 0%, #000 70%);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .roulette::after {
+            content: "";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 16px solid #ffd700;
+            filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.7));
+        }
+
+        .spin {
+            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+
+        .panel {
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px;
+            padding: 10px 10px 12px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            opacity: 0.8;
+        }
+
+        .bet-types {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .bet-type {
+            flex: 1;
+            font-size: 0.8rem;
+            padding: 8px 6px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(30, 30, 30, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bet-type input {
+            margin-right: 4px;
+        }
+
+        .bet-type span.color-chip {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .chip-red {
+            background: #e63946;
+        }
+
+        .chip-black {
+            background: #000;
+            border: 1px solid #555;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .row label {
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 8px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(15, 15, 15, 0.95);
+            color: #f5f5f5;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px;
+            border-radius: 999px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ffb703, #fb8500);
+            color: #111;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+            transition: transform 0.07s ease, box-shadow 0.07s ease, opacity 0.2s;
+        }
+
+        button:active {
+            transform: translateY(1px) scale(0.99);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: default;
+            transform: none;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .results {
+            margin-top: 12px;
+            font-size: 0.95rem;
+        }
+
+        .results-main {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .results-details {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .tag-red {
+            background: #b30000;
+        }
+
+        .tag-black {
+            background: #111;
+            border: 1px solid #555;
+        }
+
+        .tag-green {
+            background: #145a32;
+        }
+
+        .footer-note {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            text-align: center;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="card">
+            <h1>🎰 Fake Roulette</h1>
+            <p class="subtitle">Juste pour le fun – aucun vrai argent 💸</p>
+    
+            <p class="credits">
+                Crédits : <span id="credits">1000</span>
+            </p>
+    
+            <div class="roulette-wrapper">
+                <div id="rouletteWheel" class="roulette"></div>
+            </div>
+    
+            <div class="panel">
+                <p class="section-title">Type de pari</p>
+                <div class="bet-types">
+                    <label class="bet-type">
+                        <input type="radio" name="betType" value="red" checked />
+                        <span class="color-chip chip-red"></span>
+                        <span>Rouge</span>
+                    </label>
+                    <label class="bet-type">
+                        <input type="radio" name="betType" value="black" />
+                        <span class="color-chip chip-black"></span>
+                        <span>Noir</span>
+                    </label>
+                    <label class="bet-type">
+                        <input type="radio" name="betType" value="number" />
+                        <span>Nombre exact</span>
+                    </label>
+                </div>
+    
+                <div class="row">
+                    <label for="numberInput">Nombre (0–36)</label>
+                    <input type="number" id="numberInput" min="0" max="36" placeholder="ex : 17" />
+                </div>
+    
+                <div class="row">
+                    <label for="betInput">Mise</label>
+                    <input type="number" id="betInput" min="1" placeholder="ex : 50" />
+                </div>
+    
+                <button id="spinButton">Lancer la roulette</button>
+    
+                <div class="results">
+                    <div id="resultMain" class="results-main">Résultat en attente…</div>
+                    <div id="resultDetails" class="results-details"></div>
+                </div>
+            </div>
+    
+            <p class="footer-note">
+                0 = vert, pairs ≈ noir, impairs ≈ rouge.  
+                Jeu simplifié pour passer le temps 😄
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const wheel = document.getElementById("rouletteWheel");
+        const creditsSpan = document.getElementById("credits");
+        const betInput = document.getElementById("betInput");
+        const numberInput = document.getElementById("numberInput");
+        const spinButton = document.getElementById("spinButton");
+        const resultMain = document.getElementById("resultMain");
+        const resultDetails = document.getElementById("resultDetails");
+    
+        let credits = 1000;
+        let isSpinning = false;
+        let currentRotation = 0;
+    
+        function getSelectedBetType() {
+            const radios = document.querySelectorAll('input[name="betType"]');
+            for (const r of radios) {
+                if (r.checked) return r.value;
+            }
+            return "red";
+        }
+    
+        function numberToColor(num) {
+            if (num === 0) return "green";
+            return num % 2 === 0 ? "black" : "red";
+        }
+    
+        function colorTag(color) {
+            let cls = "tag ";
+            let label = "";
+            if (color === "red") {
+                cls += "tag-red";
+                label = "ROUGE";
+            } else if (color === "black") {
+                cls += "tag-black";
+                label = "NOIR";
+            } else {
+                cls += "tag-green";
+                label = "VERT";
+            }
+            return `<span class="${cls}">${label}</span>`;
+        }
+    
+        function updateCreditsDisplay() {
+            creditsSpan.textContent = credits;
+        }
+    
+        function spinRoulette() {
+            if (isSpinning) return;
+    
+            let bet = parseInt(betInput.value, 10);
+            if (isNaN(bet) || bet <= 0) {
+                alert("Choisis une mise valide !");
+                return;
+            }
+            if (bet > credits) {
+                alert("Tu n'as pas assez de crédits pour cette mise !");
+                return;
+            }
+    
+            const betType = getSelectedBetType();
+            let chosenNumber = null;
+            if (betType === "number") {
+                chosenNumber = parseInt(numberInput.value, 10);
+                if (isNaN(chosenNumber) || chosenNumber < 0 || chosenNumber > 36) {
+                    alert("Entre un nombre entre 0 et 36.");
+                    return;
+                }
+            }
+    
+            credits -= bet;
+            updateCreditsDisplay();
+    
+            isSpinning = true;
+            spinButton.disabled = true;
+            resultMain.textContent = "La roulette tourne…";
+            resultDetails.textContent = "";
+    
+            const randomExtra = 360 * 4 + Math.floor(Math.random() * 360);
+            currentRotation = (currentRotation + randomExtra) % 360;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+            wheel.classList.add("spin");
+    
+            setTimeout(() => {
+                const resultNumber = Math.floor(Math.random() * 37);
+                const resultColor = numberToColor(resultNumber);
+    
+                let won = false;
+                let gain = 0;
+    
+                if (betType === "red" || betType === "black") {
+                    if (resultColor === betType) {
+                        won = true;
+                        gain = bet * 2;
+                    }
+                } else if (betType === "number") {
+                    if (resultNumber === chosenNumber) {
+                        won = true;
+                        gain = bet * 36;
+                    }
+                }
+    
+                if (won) {
+                    credits += gain;
+                    resultMain.innerHTML = `Tu as gagné ! +${gain} 💰`;
+                } else {
+                    resultMain.textContent = "Perdu 😅";
+                }
+                updateCreditsDisplay();
+    
+                resultDetails.innerHTML =
+                    `Numéro tiré : ${resultNumber} ${colorTag(resultColor)}`;
+    
+                isSpinning = false;
+                spinButton.disabled = false;
+            }, 3000);
+        }
+    
+        spinButton.addEventListener("click", spinRoulette);
+    </script>
+    </body>
